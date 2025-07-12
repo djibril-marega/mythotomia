@@ -47,12 +47,16 @@ Ce qui démarre :
 
 #### Exemple de `Procfile` :
 
-```procfile
+```procfile sur Windows
 web: python manage.py runserver
 worker: celery -A identity_service worker --pool=solo --loglevel=info
 beat: celery -A identity_service beat --loglevel=info
 ```
-
+```procfile sur Linux
+web: python manage.py runserver
+worker: celery -A identity_service worker --loglevel=info
+beat: celery -A identity_service beat --loglevel=info
+```
 ---
 
 ## 🔐 Secrets gérés avec Vault
