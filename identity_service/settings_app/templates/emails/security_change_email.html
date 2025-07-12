@@ -1,0 +1,42 @@
+<!DOCTYPE html> 
+<html lang="en">        
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email de Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px; 
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+    </style>    
+</head>
+<body>
+    <div class="container">
+        <h1>Confirmez votre nouvelle adresse e-mail</h1>
+        <p>Bonjour ${user_name},</p>
+        <p>Vous avez demandé à modifier votre adresse e-mail sur <strong>Mythotomia</strong>.</p>
+        <p>Veuillez utiliser le code de confirmation ci-dessous pour valider ce changement :</p>
+        <p><strong>${confirmation_code}</strong></p>
+        <p>Si vous n’êtes pas à l’origine de cette demande, veuillez ignorer cet e-mail ou contacter notre support.</p>
+        <p>Cordialement,</p>
+        <p>L'équipe Mythotomia</p>
+    </div>
+</html>

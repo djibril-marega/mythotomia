@@ -1,0 +1,62 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{% static 'auth/style.css' %}" />
+  <title>Confirmation Email - Code à 6 chiffres</title>
+</head>
+<body>
+  <!-- Formulaire de confirmation par code --> 
+  <div class="auth-container">
+    <h2>Confirmation par code</h2>
+    <form id="codeForm" action="{{ form_action_url }}" method="POST">
+      <div class="form-group">
+        {% csrf_token %}
+        {{ form.code.label_tag }}
+        {{ form.code }}
+        {% if form.code.errors %}
+          <div class="error">{{ form.code.errors }}</div>
+        {% endif %}
+      </div>
+      <button type="submit">Confirmer</button>
+    </form>
+    <div class="form-group">
+      <!-- Messages flash succès / erreur -->
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %} 
+    </div> 
+
+    <div class="form-footer">
+      <div id="countdownMessage">Renvoi du code dans <span id="countdown">30</span> secondes...</div>
+      <div id="resendMessage" style="display:none;">
+        Si vous n'avez pas reçu le code, <a href="{{ resend_email_url }}" id="resendLink">cliquez ici pour en recevoir un autre par mail</a>.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const countdownElement = document.getElementById('countdown');
+    const countdownMessage = document.getElementById('countdownMessage');
+    const resendMessage = document.getElementById('resendMessage');
+    let timeLeft = 30; // secondes
+
+    const timer = setInterval(() => {
+      timeLeft--;
+      countdownElement.textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        countdownMessage.style.display = 'none'; // Cache le compte à rebours
+        resendMessage.style.display = 'block'; // Affiche le message de renvoi
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

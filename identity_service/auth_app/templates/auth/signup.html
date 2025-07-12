@@ -1,0 +1,48 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription</title>
+  <link rel="stylesheet" href="{% static 'auth/style.css' %}">
+</head>
+<body>
+
+  <div class="auth-container">
+    <h2>Inscription</h2>
+    <form id="signupForm" action="{% url 'signup' %}" method="POST"> 
+      {% csrf_token %}
+      {{ form.username.label_tag }}
+      {{ form.username }}
+      {% if form.username.errors %}
+        <div class="error">{{ form.username.errors }}</div>
+      {% endif %}
+
+      {{ form.email.label_tag }}
+      {{ form.email }}
+      {% if form.email.errors %}
+        <div class="error">{{ form.email.errors }}</div>
+      {% endif %}
+      
+      {{ form.password1.label_tag }}
+      {{ form.password1 }}
+      {% if form.password1.errors %}
+        <div class="error">{{ form.password1.errors }}</div>
+      {% endif %}
+      
+      {{ form.password2.label_tag }}
+      {{ form.password2 }}
+      {% if form.password2.errors %}
+        <div class="error">{{ form.password2.errors }}</div>
+      {% endif %}
+      
+      
+      <button type="submit">S'inscrire</button>
+      <div class="form-group form-footer">
+        <p>Déjà inscrit ? <a href="{% url 'login' %}">Se connecter</a></p>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

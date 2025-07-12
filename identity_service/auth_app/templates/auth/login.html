@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr"> 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion</title>
+  <link rel="stylesheet" href="{% static 'auth/style.css' %}">
+</head>
+<body>
+
+  <div class="auth-container">
+    <h2>Connexion</h2>
+    <form id="loginForm" action="{% url 'login' %}" method="POST">
+      {% csrf_token %}
+      {{ form.identifiant.label_tag }}
+      {{ form.identifiant }}
+
+      {{ form.password.label_tag }}
+      {{ form.password }}
+      {% if form.non_field_errors %}
+        <div class="error">{{ form.non_field_errors }}</div>
+      {% endif %}
+      {% if form.non_field_messages %}
+        <div class="error">{{ form.non_field_messages }}</div>
+      {% endif %}
+      <button type="submit">Se connecter</button>
+      <div class="form-group form-footer">
+        {% if form.non_field_errors %} 
+          <p>Mot de passe oublié ? <a href="{% url 'password_reset' %}">Réinitialiser</a></p> 
+        {% endif %} 
+        <p>Pas encore inscrit ? <a href="{% url 'signup' %}">S'inscrire</a></p>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

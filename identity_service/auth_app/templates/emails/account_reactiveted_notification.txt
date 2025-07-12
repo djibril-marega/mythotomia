@@ -1,0 +1,13 @@
+Objet : [Mythotomia] – Votre compte a été réactivé avec succès
+
+Bonjour {{ user.first_name|default:user.username }},
+
+Nous vous informons que votre compte associé à l'adresse {{ user.email }} a été réactivé avec succès le {{ user.last_login|date:"d/m/Y à H:i" }} (heure UTC).
+
+Cela signifie que vous pouvez à nouveau accéder à toutes les fonctionnalités de notre plateforme.
+
+⚠️ Si vous n’êtes pas à l’origine de cette réactivation, veuillez contacter immédiatement notre équipe de support à l'adresse : support@mythotomia.com.
+
+Merci de votre confiance.
+
+— L’équipe Mythotomia

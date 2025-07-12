@@ -1,0 +1,46 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirmer la suppression de votre compte</title>
+  <link rel="stylesheet" href="{% static 'css/style_confirm_disable_account.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Suppression de votre compte</h1>
+        <p>
+            Vous êtes sur le point de <strong>désactiver votre compte</strong>. Cette action entraînera :
+        </p>
+        <ul>
+            <li>L’impossibilité d’accéder à votre espace personnel</li>
+            <li>La désactivation temporaire de toutes vos données</li>
+            <li>L’interruption immédiate de vos accès aux services</li>
+        </ul>
+
+        <div class="warning">
+            Votre compte pourra être <strong>réactivé pendant 30 jours</strong> en vous reconnectant simplement.<br>
+            Passé ce délai, vos données seront définitivement supprimées.
+        </div>
+
+        <p>
+            Si vous n’êtes pas sûr(e), vous pouvez annuler cette action et revenir à votre tableau de bord.<br>
+            Pour continuer, vous devez confirmer votre décision.
+        </p>
+
+        <div class="danger-zone">
+            <form method="post" action="{% url 'delete_account' %}" onsubmit="return confirmDelete();">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger">🗑️ Confirmer la suppression de mon compte</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete() {
+            return confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est réversible pendant 30 jours.");
+        }
+    </script>
+</body>
+</html>

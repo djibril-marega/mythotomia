@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Votre compte a été réactivé – Mythotomia</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+  <h2 style="color: #5cb85c;">Votre compte est de nouveau actif</h2>
+
+  <p>Bonjour {{ user.first_name|default:user.username }},</p>
+
+  <p>
+    Nous vous informons que votre compte associé à l’adresse
+    <strong>{{ user.email }}</strong> a été réactivé avec succès le
+    <strong>{{ user.last_login|date:"d/m/Y à H:i" }}</strong> (heure UTC).
+  </p>
+
+  <p>
+    Vous pouvez à présent profiter à nouveau pleinement de nos services.
+  </p>
+
+  <p style="color: #d9534f; font-weight: bold;">
+    ⚠️ Si vous n’êtes pas à l’origine de cette réactivation, merci de nous contacter immédiatement à
+    <a href="mailto:support@mythotomia.com">support@mythotomia.com</a>.
+  </p>
+
+  <p>Merci pour votre confiance.</p>
+
+  <p>— L’équipe <strong>Mythotomia</strong></p>
+</body>
+</html>

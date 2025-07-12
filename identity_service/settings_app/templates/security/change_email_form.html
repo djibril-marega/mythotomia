@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr"> 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modifier votre adresse email</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <div class="auth-container"> 
+    <h2>Modifier votre adresse email</h2>
+    <form id="loginForm" action="{% url 'change_email' %}" method="POST">   
+      {% csrf_token %}
+        {{ form.new_email.label_tag }}
+        {{ form.new_email }}
+        {% if form.non_field_errors %}
+            <div class="error">{{ form.non_field_errors }}</div>
+        {% endif %}
+        {% if form.non_field_messages %}
+            <div class="error">{{ form.non_field_messages }}</div>
+        {% endif %}
+      {% if form.new_email.errors %}
+        <div class="error">{{ form.new_email.errors }}</div>
+      {% endif %}
+      <button type="submit">Suivant</button>
+      <div class="form-group form-footer">
+      </div>
+    </form>
+  </div>
+</body>
+</html>

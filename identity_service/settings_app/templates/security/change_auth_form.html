@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Votre compte</title>
+  <link rel="stylesheet" href="{% static 'css/style_change_auth.css' %}">
+</head>
+<body>
+  <div class="container">
+    <h1>Votre compte</h1>
+
+    {% url 'verify_password' as verify_password_url %}
+    <button class="btn" id="btn-change-username" >
+      <span class="left">Nom d'utilisateur</span>
+      <span class="right">@{{username}} </span>
+      <span class="arrow">›</span>
+    </button>
+
+    {% url 'verify_password' as verify_password_url %}
+    <button class="btn" id="btn-change-email" >
+      <span class="left">Adresse email</span>
+      <span class="right">{{email}} </span>
+      <span class="arrow">›</span>
+    </button>
+
+    {% url 'password_change' as password_change_url %}
+    <button class="btn" id="btn-change-password" >
+      <span class="left">Mot de passe</span>
+      <span class="right">••••••••</span>
+      <span class="arrow">›</span>
+    </button>
+
+    <form method="POST" action="{% url 'logout' %}" style="margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary" onclick="return confirm('Voulez-vous vraiment vous déconnecter ?');">
+            <span class="left">Déconnexion</span>
+            <span class="right">Quitter</span>
+            <span class="arrow">›</span>
+        </button>
+    </form>
+
+    <button class="btn btn-danger" id="btn-delete-account">
+        <span class="left">Supprimer mon compte</span>
+        <span class="right">Action définitive</span>
+        <span class="arrow">🗑</span>
+    </button>
+  </div>
+</body>
+</html>
+
+<script>
+  document.getElementById('btn-change-username').addEventListener('click', function() {
+    // Redirection avec query string ajoutée côté JS
+    window.location.href = "{{ verify_password_url }}?change=username";
+  });
+  document.getElementById('btn-change-email').addEventListener('click', function() {
+    // Redirection avec query string ajoutée côté JS
+    window.location.href = "{{ verify_password_url }}?change=email";
+  });
+  document.getElementById('btn-change-password').addEventListener('click', function() {
+    // Redirection avec query string ajoutée côté JS
+    window.location.href = "{{ password_change_url }}";
+  });
+
+  document.getElementById('btn-delete-account').addEventListener('click', function() {
+    if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
+      window.location.href = "{{ verify_password_url }}?change=state-account";
+    }
+  });
+</script>

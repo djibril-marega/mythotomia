@@ -1,0 +1,5 @@
+f"Bonjour {user.first_name or ''},\n\n"
+        f"Votre adresse e-mail a été modifiée avec succès.\n"
+        f"Nouvelle adresse : {new_email}\n\n"
+        "Si ce n’est pas vous, changez immédiatement votre mot de passe.\n\n"
+        "L’équipe de Mythotomia"

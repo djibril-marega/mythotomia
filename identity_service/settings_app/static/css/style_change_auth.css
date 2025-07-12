@@ -1,0 +1,92 @@
+body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+.container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 380px;
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: #222;
+    text-align: center;
+}
+
+.btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+    transition: background 0.3s ease;
+    width: 100%;
+    user-select: none;
+}
+
+.btn:hover {
+    background: #0056b3;
+    box-shadow: 0 6px 12px rgba(0,86,179,0.4);
+}
+
+/* Conteneur texte pour garder description et info séparés */
+.btn .left {
+    flex-shrink: 0; /* Pas de réduction */
+}
+
+.btn .right {
+    margin-left: auto; /* pousse vers la droite */
+    font-style: italic;
+    opacity: 0.85;
+    white-space: nowrap;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn .arrow {
+    font-size: 20px;
+    margin-left: 10px;
+    user-select: none;
+    transition: transform 0.3s ease;
+}
+
+.btn:hover .arrow {
+    transform: translateX(5px);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+}
+.btn-secondary:hover {
+  background: #5a6268;
+  box-shadow: 0 6px 12px rgba(90, 98, 104, 0.4);
+}
+
+.btn-danger {
+  background: #dc3545;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+.btn-danger:hover {
+  background: #c82333;
+  box-shadow: 0 6px 12px rgba(200, 35, 51, 0.4);
+}

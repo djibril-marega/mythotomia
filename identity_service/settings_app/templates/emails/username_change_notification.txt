@@ -1,0 +1,20 @@
+{% load static %}
+Notification de changement de nom d'utilisateur
+
+Bonjour,
+
+Nous vous informons que votre nom d'utilisateur a été modifié avec succès.
+
+Ancien nom d'utilisateur : {{old_username}}
+Nouveau nom d'utilisateur : {{new_username}}
+
+Ce changement est désormais effectif sur l’ensemble de nos services.
+
+Si vous n'êtes pas à l'origine de cette modification, veuillez contacter notre support immédiatement à l'adresse suivante : support@mythotomia.com
+
+Merci pour votre confiance.
+
+L’équipe Mythotomia
+
+---
+Ce message est généré automatiquement, merci de ne pas y répondre directement.

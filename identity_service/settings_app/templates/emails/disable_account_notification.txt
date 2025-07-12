@@ -1,0 +1,17 @@
+Objet : [Mythotomia] – Confirmation de suppression de votre compte
+
+Bonjour {{ user.first_name|default:user.username }},
+
+Nous vous confirmons que votre compte associé à l’adresse {{ user.email }} a été désactivé le {{ user.delete_at|date:"d/m/Y à H:i" }} (heure UTC).
+
+Toutes vos données ont été temporairement désactivées conformément à notre politique de confidentialité.
+
+🕓 Vous pouvez encore récupérer votre compte pendant une période de 30 jours simplement en vous reconnectant. Passé ce délai, vos données seront définitivement supprimées.
+
+Si vous êtes à l’origine de cette demande, aucune action n’est requise.
+
+⚠️ Si vous n’êtes pas à l’origine de cette action, veuillez nous contacter immédiatement à support@votresite.com.
+
+Merci pour votre confiance.
+
+— L’équipe Mythotomia

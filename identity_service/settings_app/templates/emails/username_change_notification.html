@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Changement de nom d'utilisateur</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+  <div style="max-width: 600px; margin: auto; padding: 20px;">
+    <h2 style="color: #004085;">Notification de changement de nom d'utilisateur</h2>
+    <p>Bonjour,</p>
+    <p>Nous vous informons que votre nom d'utilisateur a été modifié avec succès.</p>
+    <p><strong>Ancien nom d'utilisateur :</strong> <span style="color: #dc3545;">{{old_username}}</span><br>
+       <strong>Nouveau nom d'utilisateur :</strong> <span style="color: #28a745;">{{new_username}}</span></p>
+    <p>Ce changement est désormais effectif sur l’ensemble de nos services.</p>
+    <p>Si vous n'êtes pas à l'origine de cette modification, veuillez <a href="{{support_url}}" style="color: #007bff;">contacter notre support</a> immédiatement.</p>
+    <p>Merci pour votre confiance.</p>
+    <p>L’équipe Mythotomia</p>
+    <hr>
+    <small style="color: #6c757d;">Ce message est généré automatiquement, merci de ne pas y répondre directement.</small>
+  </div>
+</body>
+</html>

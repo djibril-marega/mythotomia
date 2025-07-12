@@ -1,0 +1,6 @@
+# .gitignore (à la racine)
+**/__pycache__/
+**/*.pyc 
+**/venv/
+**/.env
+
