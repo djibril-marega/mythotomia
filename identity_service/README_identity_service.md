@@ -45,14 +45,17 @@ Ce qui démarre :
 - `worker` : le worker Celery
 - `beat` : le planificateur de tâches périodiques
 
-#### Exemple de `Procfile` :
+#### Exemples de `Procfile` :
 
-```procfile sur Windows
+procfile sur Windows
+```
 web: python manage.py runserver
 worker: celery -A identity_service worker --pool=solo --loglevel=info
 beat: celery -A identity_service beat --loglevel=info
 ```
-```procfile sur Linux
+
+procfile sur Linux
+```
 web: python manage.py runserver
 worker: celery -A identity_service worker --loglevel=info
 beat: celery -A identity_service beat --loglevel=info
@@ -154,7 +157,7 @@ DJANGO_ALLOWED_HOSTS
 
 Le service utilise Celery Beat pour planifier la suppression des comptes désactivés.
 
-🎯 L’intervalle de temps peut être configuré dans l’interface Django admin (`django-celery-beat`).
+🎯 La planification de la tâche doit être configuré dans l’interface Django admin (`django-celery-beat`).
 
 ---
 
@@ -203,9 +206,10 @@ Vous pouvez configurer les adresses/identifiants d'accès dans le fichier `.env`
 
 ## 🛠️ À faire
 
-- [ ] Ajouter la gestion des token jwt à la déconnexion volontaire de l'utilisateur
 - [ ] Ajouter des tests automatisés
-- [ ] Ajouter un service `user_profile` si séparation prévue
+- [ ] Ajouter un service `user_profile` si séparation prévue 
+- [ ] Ajouter une fonctionnalité de blacklist des tokens jwt révoquer dans le service identity (ex : à la déconnexion)
+- [ ] Ajouter un uuid à chaque nouvel utilisateur dans le service identity et utiliser cela comme user id dans les tokens
 
 ---
 
