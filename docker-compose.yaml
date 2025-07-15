@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  identity:
+    build:
+      context: ./identity_service
+    container_name: identity
+    env_file: 
+      - ./identity_service/.env
+    expose:
+      - "8000"
+    networks:
+      - backend
+
+  nginx:
+    build:
+      context: ./reverse_proxy_service
+    container_name: nginx_reverse_proxy  
+    ports:
+      - "80:80"
+    depends_on:
+      - identity
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge 
