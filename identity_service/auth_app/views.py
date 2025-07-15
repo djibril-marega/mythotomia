@@ -124,7 +124,7 @@ def login_view(request):
                     "sub": user.id,
                     "email": user.email,
                     "username": user.username, 
-                    "email_verified": True,
+                    "email_verified": user.email_verified_at,
                     "role": user.role,
                     "iat": int(time.time()),
                     "exp": int(time.time())+86400,

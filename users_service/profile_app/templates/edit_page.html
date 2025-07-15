@@ -1,0 +1,168 @@
+{% load static %}
+<!-- {% csrf_token %} -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Édition du profil</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<script>
+document.getElementById("profileForm").addEventListener("submit", async function(e) {
+  e.preventDefault(); // Empêche le formulaire de soumettre normalement
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  // Récupérer le JWT depuis localStorage (ou autre méthode)
+  //const token = localStorage.getItem("access_token");
+  const token = "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.iOeNU4dAFFeBwNj6qdhdvm-IvDQrTa6R22lQVJVuWJxorJfeQww5Nwsra0PjaOYhAMj9jNMO5YLmud8U7iQ5gJK2zYyepeSuXhfSi8yjFZfRiSkelqSkU19I-Ja8aQBDbqXf2SAWA8mHF8VS3F08rgEaLCyv98fLLH4vSvsJGf6ueZSLKDVXz24rZRXGWtYYk_OYYTVgR1cg0BLCsuCvqZvHleImJKiWmtS0-CymMO4MMjCy_FIl6I56NqLE9C87tUVpo1mT-kbg5cHDD8I7MjCW5Iii5dethB4Vid3mZ6emKjVYgXrtkOQ-JyGMh6fnQxEFN1ft33GX2eRHluK9eg"
+
+  try {
+    const response = await fetch(form.action, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}` 
+      },
+      body: formData
+    });
+
+    if (response.ok) {
+      alert("Profil mis à jour !");
+      // éventuellement : location.reload();
+    } else {
+      alert("Erreur : " + response.status);
+    }
+  } catch (err) {
+    console.error("Erreur réseau :", err);
+    alert("Erreur réseau");
+  }
+});
+</script>
+
+
+<body>
+  <form id="profileForm" action="/profile/users" method="POST" enctype="multipart/form-data">
+    <button type="submit" class="save-btn">Enregistrer</button>
+    <div class="banner-container">
+      <img id="banner" src="default-banner.jpg" alt="Bannière">
+      <input type="file" name="banner" id="bannerInput" style="display: none">
+      <button type="button" onclick="editField('banner')">✎</button>
+    </div>
+
+    <div class="photo-container">
+      <img id="photo" src="default-photo.jpg" alt="Photo de profil">
+      <input type="file" name="photo" id="photoInput" style="display: none">
+      <button type="button" onclick="editField('photo')">✎</button>
+    </div>
+
+    <div class="field">
+      <label for="lastNameInput">Nom :</label>
+      <span id="lastName">Marega</span>
+      <input type="hidden" name="lastName" id="lastNameInput" value="Marega">
+      <button type="button" onclick="editField('lastName')">✎</button>
+    </div>
+
+    <div class="field">
+      <label for="firstNameInput">Prénom :</label>
+      <span id="firstName">Djibril</span>
+      <input type="hidden" name="firstName" id="firstNameInput" value="Djibril">
+      <button type="button" onclick="editField('firstName')">✎</button>
+    </div>
+
+    <div class="field">
+      <label for="bioInput">Bio :</label>
+      <span id="bio">Développeur passionné de systèmes distribués et de sécurité.</span>
+      <input type="hidden" name="bio" id="bioInput" value="Développeur passionné de systèmes distribués et de sécurité.">
+      <button type="button" onclick="editField('bio')">✎</button>
+    </div>
+
+    <div class="field">
+      <label for="birthDateInput">Date de naissance :</label>
+      <span id="birthDate">2000-01-01</span>
+      <input type="hidden" name="birthDate" id="birthDateInput" value="2000-01-01">
+      <button type="button" onclick="editField('birthDate')">✎</button>
+    </div>
+  </form>
+</body>
+</html>
+
+
+<script>    
+// script.js
+function editField(fieldId) {
+  const span = document.getElementById(fieldId);
+  const input = document.getElementById(fieldId + 'Input');
+
+  if (!span || !input) return;
+
+  if (span.tagName === 'IMG') {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          span.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        input.files = fileInput.files;
+      }
+      document.body.removeChild(fileInput);
+    });
+
+    fileInput.click();
+    return;
+  }
+
+  if (fieldId === 'bio') {
+    const newText = prompt('Modifier votre bio :', span.textContent);
+    if (newText !== null) {
+      span.textContent = newText;
+      input.value = newText;
+    }
+    return;
+  }
+
+  if (fieldId === 'birthDate') {
+    const currentValue = input.value;
+
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.value = currentValue;
+    dateInput.style.fontSize = '1rem';
+    dateInput.style.padding = '0.2rem';
+    dateInput.style.border = '1px solid #ccc';
+    dateInput.style.borderRadius = '6px';
+
+    const parent = span.parentNode;
+    parent.replaceChild(dateInput, span);
+    dateInput.focus();
+
+    dateInput.addEventListener('blur', () => {
+      const newValue = dateInput.value || currentValue;
+      const newSpan = document.createElement('span');
+      newSpan.id = 'birthDate';
+      newSpan.textContent = newValue;
+      parent.replaceChild(newSpan, dateInput);
+      input.value = newValue;
+    });
+
+    return;
+  }
+
+  const currentText = span.textContent;
+  const newText = prompt('Nouveau contenu pour ' + fieldId + ':', currentText);
+  if (newText !== null) {
+    span.textContent = newText;
+    input.value = newText;
+  }
+}
+</script>
