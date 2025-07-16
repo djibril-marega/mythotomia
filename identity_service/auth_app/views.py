@@ -13,7 +13,6 @@ from django.urls import reverse
 from .utils.token_generate import generate_token 
 import time 
 from django.http import JsonResponse
-from django.contrib.auth import authenticate
 
 
 
@@ -124,7 +123,7 @@ def login_view(request):
                     "sub": user.id,
                     "email": user.email,
                     "username": user.username, 
-                    "email_verified": user.email_verified_at,
+                    "email_verified": user.email_verified_at.isoformat(),
                     "role": user.role,
                     "iat": int(time.time()),
                     "exp": int(time.time())+86400,
