@@ -130,7 +130,17 @@ def login_view(request):
                     "iss": "identity-service"
                 }
                 token=generate_token(header, playload, RSAKeyName) 
-                return JsonResponse({"token": token})
+                response = JsonResponse({"message": "Token stored in cookie."})
+                response.set_cookie(
+                    key="access_token",
+                    value=token,
+                    httponly=True,  # XSS protection
+                    secure=False,    # send only https connection
+                    samesite='Strict', # ou 'Strict' pour + de sécurité (ou 'None' si en cross-domain avec HTTPS)
+                    max_age=3600*24,   # cookie lifespan in seconds
+                    path="/",       # cookie access all domain 
+                )
+                return response
             elif result == 1:
                 messages.error(request, "Votre compte n'est pas actif. Veuillez vérifier votre email.")
                 return redirect('verify-email')
