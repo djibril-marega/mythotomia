@@ -1,4 +1,3 @@
-version: '3.9'
 
 services:
   identity:
@@ -7,6 +6,21 @@ services:
     container_name: identity
     env_file: 
       - ./identity_service/.env
+    volumes:
+      - identity_static:/app/staticfiles
+    expose:
+      - "8000"
+    networks:
+      - backend 
+  
+  users:
+    build:
+      context: ./users_service
+    container_name: users
+    env_file: 
+      - ./users_service/.env
+    volumes:
+      - users_static:/app/staticfiles
     expose:
       - "8000"
     networks:
@@ -15,14 +29,22 @@ services:
   nginx:
     build:
       context: ./reverse_proxy_service
-    container_name: nginx_reverse_proxy  
+    container_name: nginx_reverse_proxy 
+    volumes:
+      - identity_static:/static/identity
+      - users_static:/static/users 
     ports:
       - "80:80"
     depends_on:
       - identity
+      - users
     networks:
       - backend
 
 networks:
   backend:
     driver: bridge 
+
+volumes:
+  identity_static: 
+  users_static:

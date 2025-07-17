@@ -8,12 +8,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* 
 
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt 
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 COPY . .
 
 ENV PYTHONUNBUFFERED=1 \
     DJANGO_SETTINGS_MODULE=identity_service.settings
 
-CMD ["sh", "-c", "python manage.py migrate && honcho start"] 
+CMD ["/entrypoint.sh"]

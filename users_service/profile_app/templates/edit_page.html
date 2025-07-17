@@ -1,5 +1,7 @@
 {% load static %}
-<!-- {% csrf_token %} -->
+<!-- 
+ {% csrf_token %}  
+ -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,44 +10,12 @@
   <title>Édition du profil</title>
   <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
-
-<script>
-document.getElementById("profileForm").addEventListener("submit", async function(e) {
-  e.preventDefault(); // Empêche le formulaire de soumettre normalement
-
-  const form = e.target;
-  const formData = new FormData(form);
-
-  // Récupérer le JWT depuis localStorage (ou autre méthode)
-  //const token = localStorage.getItem("access_token");
-  const token = "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.iOeNU4dAFFeBwNj6qdhdvm-IvDQrTa6R22lQVJVuWJxorJfeQww5Nwsra0PjaOYhAMj9jNMO5YLmud8U7iQ5gJK2zYyepeSuXhfSi8yjFZfRiSkelqSkU19I-Ja8aQBDbqXf2SAWA8mHF8VS3F08rgEaLCyv98fLLH4vSvsJGf6ueZSLKDVXz24rZRXGWtYYk_OYYTVgR1cg0BLCsuCvqZvHleImJKiWmtS0-CymMO4MMjCy_FIl6I56NqLE9C87tUVpo1mT-kbg5cHDD8I7MjCW5Iii5dethB4Vid3mZ6emKjVYgXrtkOQ-JyGMh6fnQxEFN1ft33GX2eRHluK9eg"
-
-  try {
-    const response = await fetch(form.action, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}` 
-      },
-      body: formData
-    });
-
-    if (response.ok) {
-      alert("Profil mis à jour !");
-      // éventuellement : location.reload();
-    } else {
-      alert("Erreur : " + response.status);
-    }
-  } catch (err) {
-    console.error("Erreur réseau :", err);
-    alert("Erreur réseau");
-  }
-});
-</script>
-
-
 <body>
   <form id="profileForm" action="/profile/users" method="POST" enctype="multipart/form-data">
-    <button type="submit" class="save-btn">Enregistrer</button>
+    <div class="form-actions">
+      <a href="/profile" class="cancel-btn">Annuler</a>
+      <button type="submit" class="save-btn">Enregistrer</button>
+    </div>
     <div class="banner-container">
       <img id="banner" src="default-banner.jpg" alt="Bannière">
       <input type="file" name="banner" id="bannerInput" style="display: none">
@@ -55,7 +25,8 @@ document.getElementById("profileForm").addEventListener("submit", async function
     <div class="photo-container">
       <img id="photo" src="default-photo.jpg" alt="Photo de profil">
       <input type="file" name="photo" id="photoInput" style="display: none">
-      <button type="button" onclick="editField('photo')">✎</button>
+      <span class="edit-icon">✎</span>
+      <button type="button" onclick="editField('photo')"></button>
     </div>
 
     <div class="field">
@@ -86,83 +57,98 @@ document.getElementById("profileForm").addEventListener("submit", async function
       <button type="button" onclick="editField('birthDate')">✎</button>
     </div>
   </form>
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="modalTitle">Modifier</h2>
+      <input id="modalInput" type="text" class="modal-input">
+      <input id="modalInputDate" type="date" class="modal-input hidden">
+      <div class="modal-actions">
+        <button id="modalSave">Enregistrer</button>
+        <button id="modalClose" class="modal-cancel">Annuler</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const fields = ['lastName', 'firstName', 'bio', 'birthDate']; // Ajout de birthDate
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalInputText = document.getElementById('modalInput');      // input type="text"
+  const modalInputDate = document.getElementById('modalInputDate');  // input type="date"
+  const modalSave = document.getElementById('modalSave');
+  const modalClose = document.getElementById('modalClose');
 
-<script>    
-// script.js
-function editField(fieldId) {
-  const span = document.getElementById(fieldId);
-  const input = document.getElementById(fieldId + 'Input');
+  let currentField = '';
 
-  if (!span || !input) return;
+  fields.forEach(field => {
+    const container = document.getElementById(field).parentElement;
+    container.classList.add('editable');
+    container.addEventListener('click', () => openModal(field));
+  });
 
-  if (span.tagName === 'IMG') {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.style.display = 'none';
-    document.body.appendChild(fileInput);
+  document.querySelector('.photo-container').addEventListener('click', () => editImage('photo'));
+  document.querySelector('.banner-container').addEventListener('click', () => editImage('banner'));
 
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
+  function openModal(fieldId) {
+    currentField = fieldId;
+    const span = document.getElementById(fieldId);
+    const input = document.getElementById(fieldId + 'Input');
+    modalTitle.textContent = 'Modifier ' + fieldId;
+
+    // Affiche seulement le champ de type approprié
+    if (fieldId === 'birthDate') {
+      modalInputText.classList.add('hidden');
+      modalInputDate.classList.remove('hidden');
+      modalInputDate.value = input.value;
+    } else {
+      modalInputDate.classList.add('hidden');
+      modalInputText.classList.remove('hidden');
+      modalInputText.value = span.textContent;
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  modalSave.addEventListener('click', () => {
+    const span = document.getElementById(currentField);
+    const input = document.getElementById(currentField + 'Input');
+
+    if (currentField === 'birthDate') {
+      const newValue = modalInputDate.value;
+      if (newValue) {
+        span.textContent = newValue;
+        input.value = newValue;
+      }
+    } else {
+      const newValue = modalInputText.value;
+      if (newValue) {
+        span.textContent = newValue;
+        input.value = newValue;
+      }
+    }
+
+    modal.classList.add('hidden');
+  });
+
+
+  modalClose.addEventListener('click', () => modal.classList.add('hidden'));
+
+  function editImage(fieldId) {
+    const inputFile = document.getElementById(fieldId + 'Input');
+    inputFile.click();
+    inputFile.onchange = () => {
+      const file = inputFile.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-          span.src = e.target.result;
+        reader.onload = e => {
+          document.getElementById(fieldId).src = e.target.result;
         };
         reader.readAsDataURL(file);
-        input.files = fileInput.files;
       }
-      document.body.removeChild(fileInput);
-    });
-
-    fileInput.click();
-    return;
+    };
   }
-
-  if (fieldId === 'bio') {
-    const newText = prompt('Modifier votre bio :', span.textContent);
-    if (newText !== null) {
-      span.textContent = newText;
-      input.value = newText;
-    }
-    return;
-  }
-
-  if (fieldId === 'birthDate') {
-    const currentValue = input.value;
-
-    const dateInput = document.createElement('input');
-    dateInput.type = 'date';
-    dateInput.value = currentValue;
-    dateInput.style.fontSize = '1rem';
-    dateInput.style.padding = '0.2rem';
-    dateInput.style.border = '1px solid #ccc';
-    dateInput.style.borderRadius = '6px';
-
-    const parent = span.parentNode;
-    parent.replaceChild(dateInput, span);
-    dateInput.focus();
-
-    dateInput.addEventListener('blur', () => {
-      const newValue = dateInput.value || currentValue;
-      const newSpan = document.createElement('span');
-      newSpan.id = 'birthDate';
-      newSpan.textContent = newValue;
-      parent.replaceChild(newSpan, dateInput);
-      input.value = newValue;
-    });
-
-    return;
-  }
-
-  const currentText = span.textContent;
-  const newText = prompt('Nouveau contenu pour ' + fieldId + ':', currentText);
-  if (newText !== null) {
-    span.textContent = newText;
-    input.value = newText;
-  }
-}
+});
 </script>
