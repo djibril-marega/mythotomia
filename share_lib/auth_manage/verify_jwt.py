@@ -37,7 +37,7 @@ def get_public_key(client, keyName, versionKey="latest_version"):
 
 def verify_jwt_ps256(client, token: str, keyName, versionKey="latest_version"): 
     # get public key
-    publicKey=get_public_key(client, keyName, versionKey="latest_version")
+    publicKey=get_public_key(client, keyName, versionKey)
     print("La clé public est : ")
     print(publicKey)
 
@@ -45,10 +45,10 @@ def verify_jwt_ps256(client, token: str, keyName, versionKey="latest_version"):
     try:
         playload=jwt.decode(token, publicKey, algorithms=["PS256"])
     except InvalidKeyError:
-        print("Error : This JWT could not be authenticated.")
+        print("Error : This JWT could not be authenticated.") 
         return False
-    except DecodeError:
-        print("Error : The JWT is invalid or has been tampered with.")
+    except DecodeError as e:
+        print("Invalid signature :", e)
         return False
 
     try:
