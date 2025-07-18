@@ -1,25 +1,30 @@
 from django.shortcuts import render
-from auth_manage.verify_jwt import verify_jwt_ps256 
+from auth_manage.verify_jwt import verify_jwt_ps256_with_vault_key, validate_playload
 from auth_manage.connection import connect_to_vault 
-from auth_manage.get_token import get_token_from_header 
 from django.conf import settings 
+from django.http import JsonResponse
+from cryptography.hazmat.primitives import serialization 
+from cryptography.hazmat.backends import default_backend 
 
 # Create your views here.
 def profile_edit_view(request):
     print("Voici la requête :", request)
-    # récupérer le token dans la requête 
+    # get token
+    token = request.COOKIES.get("access_token")
+    if not token:
+        return JsonResponse({"error": "Token manquant"}, status=401)
     
-    token=get_token_from_header(request)
-    print("Voici le token :", token) 
+    print("Voici le token :", token, 'terminer') 
     # décoder le token 
     vaultUrl=settings.VAULT_ADDR
     vaultToken=settings.VAULT_TOKEN 
     keyName=settings.VAULT_RSA_KEY_NAME
     client=connect_to_vault(vaultUrl, vaultToken)
-    tokenIsValid=verify_jwt_ps256(client, token, keyName, versionKey="latest_version")
-    print(tokenIsValid)
-    if tokenIsValid:
-        pass 
+    tokenIsVerified=verify_jwt_ps256_with_vault_key(client, token, keyName)
+    print("Token est vérifié : ", tokenIsVerified) 
+    if tokenIsVerified:
+        tokenIsvalide=validate_playload(tokenIsVerified)
+        print("Token est validé : ", tokenIsvalide) 
     # vérifier si le profil de l'utilisateur de la requête correspond à celui du token
     # si il ne correspondent pas aller à la page de connexion
     # ---- fin de la requête pour les utilisateurs étrangers ---- continuer pour les utilisateurs propriétaire -----
