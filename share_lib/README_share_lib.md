@@ -28,12 +28,14 @@ pip install -e .
 ```
 share_lib/
 ├── auth_manage/
-│   ├── connection.py           # Connexion sécurisée à Vault
-│   ├── get_token.py            # Extraction du token JWT depuis les headers HTTP
-│   ├── vault_manage.py         # Récupération sécurisée des secrets depuis Vault
-│   ├── verify_jwt.py           # Vérification et validation des JWT via les clés publiques de Vault
-│   └── validate_file.py        # Validation du format des fichiers médias (PNG/JPEG)
-├── setup.py                    # Configuration setuptools
+│   ├── connection.py        # Connexion sécurisée à Vault
+│   ├── get_token.py         # Extraction du token JWT depuis les headers HTTP
+│   ├── vault_manage.py      # Récupération sécurisée des secrets depuis Vault
+│   ├── verify_jwt.py        # Vérification et validation des JWT via les clés publiques de Vault
+├── file_manage/
+│   └── validate_type_file.py     # Validation du format des fichiers médias (PNG/JPEG)
+├── setup.py                 # Configuration setuptools
+
 ```
 
 ---
