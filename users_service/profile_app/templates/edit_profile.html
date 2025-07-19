@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modifier le profil</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <form id="profileForm" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <div class="banner-container">
+      <img id="banner" src="{% if user_profile.banner %}{{ user_profile.banner.url }}{% else %}{% static 'banners/default-banner.jpg' %}{% endif %}" alt="Bannière">
+      {{ form.banner }}
+      <button type="button" class="edit-btn" onclick="document.getElementById('id_banner').click()">✎</button>
+    </div>
+
+    <div class="photo-container" onclick="document.getElementById('id_photo').click()">
+      <img id="photo" src="{% if user_profile.profile_photo %}{{ user_profile.profile_photo.url }}{% else %}{% static 'profiles/default-photo.png' %}{% endif %}" alt="Photo de profil">
+      {{ form.photo }}
+      <span class="edit-icon">✎</span>
+    </div>
+
+    <!-- Boutons en haut - Aux extrémités -->
+    <div class="form-actions-top" style="display: flex; justify-content: space-between;">
+      <a href="{% url 'profile' user_profile.username %}" class="cancel-btn">Annuler</a>
+      <button type="submit" class="save-btn">Enregistrer</button>
+    </div>
+
+    <!-- Zone d'erreurs -->
+    {% if form.errors %}
+      <div class="form-errors-container">
+        <div class="form-errors">
+          <h3>Erreurs à corriger :</h3>
+          <ul>
+            {% for field, errors in form.errors.items %}
+              {% for error in errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="fields-container">
+      <div class="field" onclick="openEditModal('last_name')">
+        <label data-gender="m">Nom :</label>
+        <span id="last_name_display">{{ user_profile.last_name|default:"Entrez votre nom (optionnel)" }}</span>
+        {{ form.last_name }}
+      </div>
+
+      <div class="field" onclick="openEditModal('first_name')">
+        <label data-gender="m">Prénom :</label>
+        <span id="first_name_display">{{ user_profile.first_name|default:"Entrez votre prénom (optionnel)" }}</span>
+        {{ form.first_name }}
+      </div>
+
+      <div class="field" onclick="openEditModal('bio')">
+        <label data-gender="f">Bio :</label>
+        <span id="bio_display">{{ user_profile.bio|default:"Racontez brièvement votre histoire (1000 caractères max)" }}</span>
+        {{ form.bio }}
+      </div>
+
+      <div class="field birth-date-field" onclick="openEditModal('birth_date')">
+        <label data-gender="f">Date de naissance :</label>
+        <span id="birth_date_display">
+          {% if user_profile.birth_date %}
+            {{ user_profile.birth_date|date:"d/m/Y" }}
+          {% else %}
+            Entrez votre date de naissance
+          {% endif %}
+        </span>
+        {{ form.birth_date }}
+      </div>
+    </div>
+  </form>
+
+  <!-- Modal d'édition stylisé -->
+  <div id="editModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="modalTitle">Modifier</h2>
+      
+      <div id="modalContent">
+        <!-- Le contenu sera injecté ici par JavaScript -->
+      </div>
+      
+      <div class="modal-actions">
+        <button id="modalSave" class="modal-save">Enregistrer</button>
+        <button id="modalCancel" class="modal-cancel">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fonction pour ouvrir le modal d'édition
+    function openEditModal(field) {
+      const modal = document.getElementById('editModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalContent = document.getElementById('modalContent');
+      const fieldInput = document.getElementById(`id_${field}`);
+      const displayElement = document.getElementById(`${field}_display`);
+      
+      // Personnalisation du titre
+      const label = document.querySelector(`.field[onclick="openEditModal('${field}')"] label`);
+      const labelText = label.textContent.replace(':', '').trim();
+      const gender = label.dataset.gender || 'm';
+      modalTitle.textContent = `Modifier ${gender === 'f' ? 'la' : 'le'} ${labelText.toLowerCase()}`;
+      
+      // Création du contenu du modal selon le type de champ
+      modalContent.innerHTML = '';
+      let inputElement;
+      
+      if (field === 'bio') {
+        inputElement = document.createElement('textarea');
+        inputElement.className = 'modal-textarea';
+        inputElement.value = fieldInput.value;
+        inputElement.rows = 5;
+        modalContent.appendChild(inputElement);
+      } 
+      else if (field === 'birth_date') {
+        inputElement = document.createElement('input');
+        inputElement.type = 'date';
+        inputElement.className = 'modal-input';
+        inputElement.value = fieldInput.value;
+        modalContent.appendChild(inputElement);
+      } 
+      else {
+        inputElement = document.createElement('input');
+        inputElement.type = 'text';
+        inputElement.className = 'modal-input';
+        inputElement.value = fieldInput.value;
+        modalContent.appendChild(inputElement);
+      }
+      
+      // Gestion de la sauvegarde
+      document.getElementById('modalSave').onclick = function() {
+        fieldInput.value = inputElement.value;
+        
+        // Mise à jour de l'affichage
+        if (field === 'birth_date' && inputElement.value) {
+          const dateParts = inputElement.value.split('-');
+          displayElement.textContent = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+        } else {
+          displayElement.textContent = inputElement.value || 
+            (field === 'last_name' ? "Entrez votre nom (optionnel)" : 
+             field === 'first_name' ? "Entrez votre prénom (optionnel)" : 
+             field === 'bio' ? "Racontez brièvement votre histoire (1000 caractères max)" : 
+             "Entrez votre date de naissance");
+        }
+        
+        modal.classList.add('hidden');
+      };
+      
+      // Gestion de l'annulation
+      document.getElementById('modalCancel').onclick = function() {
+        modal.classList.add('hidden');
+      };
+      
+      // Affichage du modal
+      modal.classList.remove('hidden');
+      inputElement.focus();
+    }
+
+    // Gestion des images
+    document.getElementById('id_banner').addEventListener('change', function(e) {
+      if (e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = event => document.getElementById('banner').src = event.target.result;
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+
+    document.getElementById('id_photo').addEventListener('change', function(e) {
+      if (e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = event => document.getElementById('photo').src = event.target.result;
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+  </script>
+</body>
+</html>

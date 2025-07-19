@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profil de {{ user_profile.username }}</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <div class="profile-container">
+    <div class="banner-container">
+      <img id="banner" 
+           src="{% if user_profile.banner %}{{ user_profile.banner.url }}{% else %}{% static 'banners/default-banner.jpg' %}{% endif %}" 
+           alt="Bannière">
+    </div>
+
+    <div class="photo-container">
+      <img id="photo" 
+           src="{% if user_profile.profile_photo %}{{ user_profile.profile_photo.url }}{% else %}{% static 'profiles/default-photo.png' %}{% endif %}" 
+           alt="Photo de profil">
+    </div>
+
+    {% if is_owner %}
+    <div class="form-actions-top" style="display: flex; justify-content: flex-end;">
+      <a href="{% url 'profile-edit' %}" class="edit-profile-btn">✎ Modifier le profil</a>
+    </div>
+    {% endif %}
+
+    <div class="fields-container">
+      <div class="field">
+        <label>Nom d'utilisateur :</label>
+        <span>{{ user_profile.username }}</span>
+      </div>
+
+      {% if user_profile.first_name %}
+      <div class="field">
+        <label>Prénom :</label>
+        <span>{{ user_profile.first_name }}</span>
+      </div>
+      {% endif %}
+
+      {% if user_profile.last_name %}
+      <div class="field">
+        <label>Nom :</label>
+        <span>{{ user_profile.last_name }}</span>
+      </div>
+      {% endif %}
+
+      {% if user_profile.bio %}
+      <div class="field">
+        <label>Bio :</label>
+        <span>{{ user_profile.bio }}</span>
+      </div>
+      {% endif %}
+
+      {% if show_birth_date and user_profile.birth_date %}
+      <div class="field">
+        <label>Date de naissance :</label>
+        <span>{{ user_profile.birth_date|date:"d/m/Y" }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.conf import settings 
 from django.contrib.auth.decorators import login_required 
 from .utils.email_verification import verification_email_send_process, verify_email_code 
-from .utils.connection import establish_ses_connection 
+from .utils.connection import establish_ses_connection, connect_to_vault
 from .utils.login import user_login 
 from django.urls import reverse 
 from .utils.token_generate import generate_token 
@@ -18,12 +18,15 @@ from django.http import JsonResponse
 
 # Create your views here.
 def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect(f'/profile/users/{request.user.username}')
+    
     vaultUrl=settings.VAULT_ADDR 
     vaultToken=settings.VAULT_TOKEN
     secretAwsPath=settings.VAULT_PATH_AWS_IAM
     mountPoint=settings.VAULT_MOUNT_POINT  
     ses_client=establish_ses_connection(vaultUrl, vaultToken, secretAwsPath, mountPoint)
-
+    
     if request.method == "POST":
         form = signupForm(request.POST)
         if form.is_valid():
@@ -101,6 +104,9 @@ def verifyEmail_view(request):
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect(f'/profile/users/{request.user.username}')
+    
     form = None
     RSAKeyName=settings.RSA_KEY_NAME
     if request.method == "POST":
@@ -115,7 +121,7 @@ def login_view(request):
                     return redirect('verify-email')
                 user = request.user
                 header = {
-                    "alg": "RS256",
+                    "alg": "PS256",
                     "typ": "JWT"
                 }
 

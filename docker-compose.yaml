@@ -21,6 +21,8 @@ services:
       - ./users_service/.env
     volumes:
       - users_static:/app/staticfiles
+      - ./users_service/media/profiles:/app/media/profiles
+      - ./users_service/media/banners:/app/media/banners 
     expose:
       - "8000"
     networks:
@@ -33,6 +35,8 @@ services:
     volumes:
       - identity_static:/static/identity
       - users_static:/static/users 
+      - ./users_service/media/profiles:/etc/nginx/html/media/profiles
+      - ./users_service/media/banners:/etc/nginx/html/media/banners
     ports:
       - "80:80"
     depends_on:

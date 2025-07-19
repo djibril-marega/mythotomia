@@ -34,8 +34,8 @@ except Exception as e:
     raise RuntimeError(f"Error connecting to Vault or retrieving DB secrets: {e}")
  
 # upload media files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LANGUAGES = [
     ('en', _('English')),
@@ -181,3 +181,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

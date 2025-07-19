@@ -4,6 +4,7 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import serialization
 from cryptography.exceptions import InvalidSignature
 import json
+import time 
 
 def base64url_decode(data):
     data = data.encode() if isinstance(data, str) else data
@@ -92,7 +93,14 @@ def validate_playload(playload):
         playload['exp']
         playload['iss']
         playload['iat']
-        return playload
     except KeyError:
         print("Error : Not all required payload parameters are present.")
         return False
+    
+    now = int(time.time())
+    if now > int(playload['exp']):
+        print("Error : Token expired")
+        return False
+    
+    return playload
+    

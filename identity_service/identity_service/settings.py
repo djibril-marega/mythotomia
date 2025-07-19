@@ -188,6 +188,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'auth_app.CustomUser'
 
+# session manager
+SESSION_COOKIE_AGE = 3600*24
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # Email settings
 # https://docs.djangoproject.com/en/5.2/topics/email/
