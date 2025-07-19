@@ -17,6 +17,21 @@ Service Django de gestion des comptes utilisateurs avec authentification JWT (RS
 
 ---
 
+## 🧭 Position dans l'architecture
+
+```mermaid
+graph TD
+    Client --> NGINX
+    NGINX --> identity[Identity Service]
+    NGINX --> users[Users Service]
+    identity --> Vault
+    users --> Vault
+    users --> DB[(PostgreSQL)]
+    users --> media[(Stockage local ou S3)]
+```
+
+---
+
 ## ⚙️ Fonctionnalités principales
 
 - 🔐 Authentification JWT signée avec RS256 (clé privée stockée dans Vault)
@@ -28,6 +43,39 @@ Service Django de gestion des comptes utilisateurs avec authentification JWT (RS
 - 🕒 Tâche périodique Celery (beat) pour supprimer les comptes expirés
 
 ---
+
+## 🛣️ Routes disponibles
+
+### 🔐 Authentification & Sécurité (`auth_app.urls`)
+
+| Méthode | URL                                                          | Description                                       | Authentification |
+| ------: | ------------------------------------------------------------ | ------------------------------------------------- | ---------------- |
+|    POST | `/authentification/signup/`                                  | Inscription d'un nouvel utilisateur               | Non              |
+|    POST | `/authentification/login/`                                   | Connexion de l'utilisateur                        | Non              |
+|     GET | `/authentification/logout/`                                  | Déconnexion de l'utilisateur                      | Oui              |
+|    POST | `/authentification/verify-email/`                            | Vérification de l'email                           | Oui              |
+|    POST | `/authentification/reset-password/`                          | Envoi du lien de réinitialisation de mot de passe | Non              |
+|     GET | `/authentification/reset-password/done/`                     | Confirmation d'envoi d'email                      | Oui              |
+|    POST | `/authentification/reset-password-confirm/<uidb64>/<token>/` | Validation du token de réinitialisation           | Non              |
+|     GET | `/authentification/reset-password-complete/`                 | Confirmation de la réinitialisation               | Non              |
+
+### ⚙️ Paramètres de compte (`settings_app.urls`)
+
+| Méthode | URL                                                   | Description                                             | Authentification |
+| ------: | ----------------------------------------------------- | ------------------------------------------------------- | ---------------- |
+|     GET | `/settings/security/`                                 | Page de sécurité générale                               | Oui              |
+|    POST | `/settings/security/password_change/`                 | Modifier son mot de passe                               | Oui              |
+|     GET | `/settings/security/password_change/done/`            | Confirmation de changement de mot de passe              | Oui              |
+|    POST | `/settings/security/change-email/verify-password/`    | Vérifier mot de passe pour changer l'email              | Oui              |
+|    POST | `/settings/security/change-email/`                    | Soumettre un nouvel email                               | Oui              |
+|    POST | `/settings/security/change-email/confirm-new-email/`  | Confirmer le nouvel email                               | Oui              |
+|    POST | `/settings/security/change-username/verify-password/` | Vérifier mot de passe pour changer le nom d'utilisateur | Oui              |
+|    POST | `/settings/security/change-username/`                 | Soumettre un nouveau nom d'utilisateur                  | Oui              |
+|    POST | `/settings/security/delete-account/confirm/`          | Confirmer la suppression de compte                      | Oui              |
+|    POST | `/settings/security/delete-account/`                  | Supprimer (ou désactiver) le compte utilisateur         | Oui              |
+
+---
+
 
 ## ✅ Étapes réalisées
 
@@ -180,14 +228,6 @@ Configurer les tâches dans l’admin Django (`django-celery-beat`).
 
 ---
 
-## 📚 Installation des dépendances
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
 ## 🔧 Services requis avant lancement
 
 - Vault
@@ -210,8 +250,6 @@ Configurer l’accès dans `.env` (voir `.env.example`).
 ## 📁 Projet parent : [Mythotomia](https://github.com/djibril-marega/mythotomia)
 
 Ce service fait partie du projet global Mythotomia.
-
----
 
 ---
 

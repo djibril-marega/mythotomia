@@ -59,7 +59,7 @@ graph TD
 
 | Méthode | URL                        | Description                             | Authentification |
 |--------:|----------------------------|-----------------------------------------|------------------|
-| GET     | `/users/<username>/`       | Voir un profil (pub./privé)             | Oui              |
+| GET     | `/users/<username>/`       | Voir un profil (pub./privé)             | Non/Oui          |
 | GET     | `/me/edit/`                | Voir le formulaire d’édition            | Oui              |
 | POST    | `/me/edit/`                | Modifier son profil                     | Oui              |
 
@@ -81,18 +81,12 @@ graph TD
 
 ---
 
-## ⚙️ Dépendances
+## 🔗 Dépendances
 
-```txt
-Django==5.2.4
-djangorestframework==3.16.0
-hvac==2.3.0
-PyJWT==2.10.1
-pillow==11.3.0
-psycopg2-binary==2.9.10
-python-decouple==3.8
-share-lib @ git+https://github.com/djibril-marega/mythotomia.git@main#egg=share-lib&subdirectory=share_lib
-```
+- `identity_service` : service d'authentification émettant les tokens JWT signés
+- `share-lib` : bibliothèque Python partagée pour la vérification des JWT
+- `Vault` : utilisé pour sécuriser la clé publique nécessaire à la vérification
+- `PostgreSQL` : utilisé pour stocker le profil des utilisateurs
 
 ---
 
@@ -110,6 +104,40 @@ COPY . .
 
 EXPOSE 8000
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+```
+
+---
+
+## 🔐 Secrets requis dans Vault
+
+```
+# PostgreSQL
+DB_NAME
+DB_USER
+DB_PASSWORD
+DB_HOST
+DB_PORT
+
+# Django
+DJANGO_SECRET_KEY
+DJANGO_ALLOWED_HOSTS
+
+---
+
+## 📂 Variables d’environnement
+
+Extrait de `.env.example` :
+```env
+DEBUG=true
+
+VAULT_ADDR=http://127.0.0.1:8200
+VAULT_TOKEN=hvs.xxxxxxxx
+MOUNT_POINT=service-users
+
+SECRET_DB_PATH=db
+SECRET_DJANGO_PATH=django
+
+SECRET_RSA_KEY_NAME=jwt-rsa-key
 ```
 
 ---
