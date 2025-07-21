@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Présenter une histoire</title>
+    <link rel="stylesheet" href="{% static 'create_presentation_story.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Présenter une nouvelle histoire</h1>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="title">Titre*</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="subtitle">Sous-titre</label>
+                <input type="text" id="subtitle" name="subtitle">
+            </div>
+            
+            <div class="form-group">
+                <label for="author">Auteur*</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="genre">Genre</label>
+                <input type="text" id="genre" name="genre">
+            </div>
+            
+            <div class="form-group">
+                <label for="release_date">Date de publication</label>
+                <input type="date" id="release_date" name="release_date">
+            </div>
+            
+            <div class="form-group">
+                <label for="country">Pays d'origine</label>
+                <input type="text" id="country" name="country_of_origin">
+            </div>
+            
+            <div class="form-group">
+                <label for="cast">Acteurs/Casting</label>
+                <input type="text" id="cast" name="cast">
+            </div>
+            
+            <div class="form-group">
+                <label for="synopsis">Synopsis*</label>
+                <textarea id="synopsis" name="synopsis" rows="5" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="illustration">Illustration</label>
+                <input type="file" id="illustration" name="illustrations" accept="image/*">
+                <div id="image-preview"></div>
+            </div>
+            
+            <button type="submit">Publier la présentation d'histoire</button>
+        </form>
+    </div>
+
+    <script>
+        // Prévisualisation de l'image
+        document.getElementById('illustration').addEventListener('change', function(e) {
+            const preview = document.getElementById('image-preview');
+            preview.innerHTML = '';
+            
+            if (this.files && this.files[0]) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(this.files[0]);
+                img.style.maxWidth = '200px';
+                img.style.marginTop = '10px';
+                preview.appendChild(img);
+            }
+        });
+    </script>
+</body>
+</html>

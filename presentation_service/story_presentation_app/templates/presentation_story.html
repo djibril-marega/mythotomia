@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ story.title }}</title>
+    <link rel="stylesheet" href="{% static 'presentation_story.css' %}">
+</head>
+<body>
+    <div class="story-container">
+        <header>
+            <h1>{{ story.title }}</h1>
+            {% if story.subtitle %}
+                <h2>{{ story.subtitle }}</h2>
+            {% endif %}
+        </header>
+
+        <div class="story-meta">
+            <div class="meta-item">
+                <strong>Auteur:</strong> {{ story.author }}
+            </div>
+            {% if story.genre %}
+            <div class="meta-item">
+                <strong>Genre:</strong> {{ story.genre }}
+            </div>
+            {% endif %}
+            {% if story.release_date %}
+            <div class="meta-item">
+                <strong>Publié le:</strong> {{ story.release_date|date:"d F Y" }}
+            </div>
+            {% endif %}
+            {% if story.country_of_origin %}
+            <div class="meta-item">
+                <strong>Pays:</strong> {{ story.country_of_origin }}
+            </div>
+            {% endif %}
+        </div>
+
+        {% if story.illustrations %}
+        <div class="story-illustration">
+            <img src="{{ story.illustrations.url }}" alt="Illustration de {{ story.title }}">
+        </div>
+        {% endif %}
+
+        <div class="story-content">
+            <h3>Synopsis</h3>
+            <p>{{ story.synopsis }}</p>
+            
+            {% if story.cast %}
+            <div class="story-cast">
+                <h3>Casting</h3>
+                <p>{{ story.cast }}</p>
+            </div>
+            {% endif %}
+        </div>
+        
+       <footer>
+            <a href="/profile/users/{{ story.username }}" class="profile-link">
+                <div class="user-profile">
+                    {% if profile_picture %}
+                        <img src="{{ profile_picture }}" 
+                             alt="Photo de profil de {{ story.username }}"
+                             class="profile-pic">
+                    {% else %}
+                        <div class="default-avatar">{{ story.username|first|upper }}</div>
+                    {% endif %}
+                    <div class="user-info">
+                        <span class="username">{{ story.username }}</span>
+                    </div>
+                </div>
+            </a>
+        </footer>
+    </div>
+</body>
+</html>
