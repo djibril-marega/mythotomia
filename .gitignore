@@ -1,6 +1,11 @@
-# .gitignore (à la racine)
 **/__pycache__/
 **/*.pyc 
+venv/
+.venv/
 **/venv/
+**/.venv/
 **/.env
+.vault_pass.txt 
+.id_ed25519.pub 
+ansible_env/
 

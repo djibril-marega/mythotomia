@@ -1,0 +1,37 @@
+- name: Grant privileges to identity service user on database
+  community.postgresql.postgresql_privs:
+    login_db: "{{ db_identity_db }}"
+    type: database
+    privs: CONNECT
+    roles: "{{ db_identity_username }}"
+- name: Grant privileges to identity service user on schema public
+  community.postgresql.postgresql_privs:
+    login_db: "{{ db_identity_db }}"
+    schema: public
+    type: table
+    objs: ALL_IN_SCHEMA
+    privs: SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER
+    roles: "{{ db_identity_username }}"
+- name: Grant privileges to identity service user on sequences
+  community.postgresql.postgresql_privs:
+    login_db: "{{ db_identity_db }}"
+    schema: public
+    type: sequence
+    objs: ALL_IN_SCHEMA
+    privs: USAGE,SELECT,UPDATE
+    roles: "{{ db_identity_username }}"
+- name: Grant privileges to identity service user on functions
+  community.postgresql.postgresql_privs:
+    login_db: "{{ db_identity_db }}"
+    schema: public
+    type: function
+    objs: ALL_IN_SCHEMA
+    privs: EXECUTE
+    roles: "{{ db_identity_username }}"
+- name: Grant USAGE privilege on schema public to identity service user
+  community.postgresql.postgresql_privs:
+    login_db: "{{ db_identity_db }}"
+    type: schema
+    objs: public
+    privs: USAGE
+    roles: "{{ db_identity_username }}"

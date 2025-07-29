@@ -1,0 +1,4 @@
+- name: Ensure SSH client is installed
+  apt:
+    name: openssh-client
+    state: present 

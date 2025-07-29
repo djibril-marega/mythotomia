@@ -4,6 +4,8 @@ auth_manage/connection.py
 auth_manage/get_token.py
 auth_manage/vault_manage.py
 auth_manage/verify_jwt.py
+file_manage/__init__.py
+file_manage/valid_type_file.py
 share_lib.egg-info/PKG-INFO
 share_lib.egg-info/SOURCES.txt
 share_lib.egg-info/dependency_links.txt

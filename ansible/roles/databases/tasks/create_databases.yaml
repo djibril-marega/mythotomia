@@ -1,0 +1,14 @@
+- name: Create database for identity service
+  community.postgresql.postgresql_db:
+    login_user: "{{ db_username }}"
+    login_password: "{{ db_password }}"
+    name: "{{ db_identity_db }}"
+    encoding: "UTF8"
+    state: present
+- name: Create database for users service
+  community.postgresql.postgresql_db:
+    login_user: "{{ db_username }}"
+    login_password: "{{ db_password }}"  
+    name: "{{ db_users_db }}"
+    encoding: "UTF8"
+    state: present 

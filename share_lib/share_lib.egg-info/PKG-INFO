@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: share-lib
-Version: 1.0
+Version: 1.1.1
 Requires-Dist: PyJWT==2.10.1
 Requires-Dist: cryptography==45.0.5
 Dynamic: requires-dist

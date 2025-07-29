@@ -12,6 +12,7 @@ services:
       - "8000"
     networks:
       - backend 
+      - vault_network
   
   users:
     build:
@@ -27,6 +28,26 @@ services:
       - "8000"
     networks:
       - backend
+      - vault_network
+    environment:
+      - EXTERNAL_BASE_URL=http://localhost
+
+  presentation:
+    build:
+      context: ./presentation_service
+    container_name: presentation
+    env_file: 
+      - ./presentation_service/.env
+    volumes:
+      - presentation_static:/app/staticfiles
+      - ./presentation_service/media/illustrations:/app/media/illustrations
+    expose:
+      - "8000"
+    networks:
+      - backend
+      - vault_network
+    environment:
+      - USERS_SERVICE_URL=http://users:8000
 
   nginx:
     build:
@@ -37,18 +58,41 @@ services:
       - users_static:/static/users 
       - ./users_service/media/profiles:/etc/nginx/html/media/profiles
       - ./users_service/media/banners:/etc/nginx/html/media/banners
+      - ./presentation_service/media/illustrations:/etc/nginx/html/media/illustrations
+      - presentation_static:/static/presentation 
     ports:
       - "80:80"
     depends_on:
       - identity
       - users
+      - presentation
     networks:
       - backend
+  
+  vault:
+    build:
+      context: ./vault_service 
+    container_name: vault
+    volumes:
+      - vault_data:/vault/file
+      - ./vault_service/config:/vault/config
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:8200"
+      VAULT_API_ADDR: "http://vault:8200"
+    networks:
+      - vault_network
+    cap_add:
+      - IPC_LOCK
+
 
 networks:
   backend:
     driver: bridge 
+  vault_network:
+    internal: true
 
 volumes:
   identity_static: 
   users_static:
+  presentation_static:
+  vault_data:

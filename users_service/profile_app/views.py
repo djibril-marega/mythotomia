@@ -7,6 +7,8 @@ from .models import UserProfile
 from .forms import ChangeProfile
 from django.http import Http404  
 from django.http import HttpResponseServerError
+from django.http import JsonResponse
+import unicodedata
 
 def profile_edit_view(request):
     # Récupération du token
@@ -67,7 +69,8 @@ def profile_edit_view(request):
                         # Sauvegarder la nouvelle bannière
                         banner_file = form.cleaned_data['banner']
                         new_banner_name = f"{user_profile.external_user_id}__{banner_file.name}"
-                        user_profile.banner.save(new_banner_name, banner_file, save=False)
+                        new_banner_name_ascii = unicodedata.normalize('NFKD', new_banner_name).encode('ascii', 'ignore').decode('ascii')
+                        user_profile.banner.save(new_banner_name_ascii, banner_file, save=False)
                     
                     # Gestion de la photo de profil
                     if form.cleaned_data['photo']:
@@ -81,7 +84,8 @@ def profile_edit_view(request):
                         # Sauvegarder la nouvelle photo
                         photo_file = form.cleaned_data['photo']
                         new_photo_name = f"{user_profile.external_user_id}__{photo_file.name}"
-                        user_profile.profile_photo.save(new_photo_name, photo_file, save=False)
+                        new_photo_name_ascii = unicodedata.normalize('NFKD', new_photo_name).encode('ascii', 'ignore').decode('ascii')
+                        user_profile.profile_photo.save(new_photo_name_ascii, photo_file, save=False)
                     
                     user_profile.save()
                     return redirect('profile', username=user_profile.username)
@@ -145,3 +149,20 @@ def profile_view(request, username):
     }
     
     return render(request, "profile.html", context)
+
+def get_user_profile(request, user_id):
+    try:
+        profile = UserProfile.objects.get(external_user_id=user_id)
+        
+        # Construire l'URL publique via Nginx
+        filename = profile.profile_photo.name.split('/')[-1]
+        profile_picture_url = f"{settings.EXTERNAL_BASE_URL}/media/profiles/{filename}"
+        
+        return JsonResponse({
+            'profile_picture': profile_picture_url,
+            'username': profile.username,
+            'first_name': profile.first_name, 
+            'last_name': profile.last_name
+        })
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'error': 'Profile not found'}, status=404)
