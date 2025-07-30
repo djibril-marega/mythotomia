@@ -1,7 +1,3 @@
-# mythotomia
-
----
-```markdown
 # 🏛️ Mythotomia - Plateforme d'analyse et de recommandation d'histoires
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -20,7 +16,7 @@ Mythotomia est une plateforme communautaire permettant aux passionnés d'histoir
 - 👥 De partager leurs analyses avec une communauté d'enthousiastes
 - 🎯 D'obtenir des recommandations personnalisées basées sur des critères avancés
 
-**Public cible** : Toute personne consommant des œuvres narratives (films, séries, livres, manhwa, mangas, manhwa, etc.)
+**Public cible** : Toute personne consommant des œuvres narratives (films, séries, livres, mangas, etc.)
 
 ---
 
@@ -30,7 +26,6 @@ Mythotomia est une plateforme communautaire permettant aux passionnés d'histoir
 - 👀 Consultation des profils utilisateurs
 - 📊 Accès aux notes et critiques publiques
 - 📈 Découverte des tendances
-- 🔎 Recherche et filtrage multicritères
 
 ### Pour les utilisateurs connectés
 | Service | Fonctionnalités |
@@ -41,6 +36,7 @@ Mythotomia est une plateforme communautaire permettant aux passionnés d'histoir
 | **💬 Commentaire** | Discussion sur les critiques |
 | **❤️ Like** | Interaction avec les critiques |
 | **🧠 Recommandation** | Suggestions personnalisées |
+| **🔎 Recherche** | Filtrage multicritères (genre, date, etc.) |
 
 ---
 
@@ -77,6 +73,9 @@ graph TD
     P --> DB_Pres[(DB Présentations)]
     S --> DB_Scores[(DB Scores)]
     C --> DB_Critiques[(DB Critiques)]
+    L --> DB_Likes[(DB Likes)]
+    R --> DB_Reco[(DB Recommendations)]
+    Sr --> DB_Search[(DB Recherche)]
     R --> Redis
 ```
 
