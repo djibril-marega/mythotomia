@@ -5,8 +5,9 @@
   changed_when: false
   failed_when: false
 - name: Open SSH tunnel to PostgreSQL 
+  become: no
   shell: |
-    ssh -f -N -L 5432:{{ db_hostname }}:5432 {{ app_username }}@{{ app_hostname }} -o ExitOnForwardFailure=yes 
+    ssh  -f -N -L 5432:{{ db_hostname }}:5432 {{ app_username }}@{{ app_hostname }} -o ExitOnForwardFailure=yes 
   register: ssh_tunnel_connection 
   failed_when: ssh_tunnel_connection.rc != 0 
   when: ssh_tunnel_check.stdout == "" 
@@ -22,4 +23,4 @@
   failed_when: postgresql_ping_result.failed 
   until: not postgresql_ping_result.failed
   retries: 5
-  delay: 2
+  delay: 2 

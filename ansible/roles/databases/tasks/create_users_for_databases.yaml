@@ -1,16 +1,24 @@
 - name: Create user for identity service
   community.postgresql.postgresql_user:
+    login_host: "127.0.0.1"
+    port: 5432 
+    login_db: "postgres"
     login_user: "{{ db_username }}"
     login_password: "{{ db_password }}"
     name: "{{ db_identity_username }}"
     password: "{{ db_identity_password }}"
     ssl_mode: require
+    encrypted: true
     state: present 
 - name: Create user for users service
   community.postgresql.postgresql_user:
+    login_host: "127.0.0.1"
+    port: 5432
+    login_db: "postgres"
     login_user: "{{ db_username }}"
     login_password: "{{ db_password }}"
     name: "{{ db_users_username }}"
     password: "{{ db_users_password }}"
     ssl_mode: require
+    encrypted: true
     state: present

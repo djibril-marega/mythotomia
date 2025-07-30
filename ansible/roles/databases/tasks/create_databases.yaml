@@ -1,5 +1,7 @@
 - name: Create database for identity service
   community.postgresql.postgresql_db:
+    login_host: "127.0.0.1"
+    port: 5432 
     login_user: "{{ db_username }}"
     login_password: "{{ db_password }}"
     name: "{{ db_identity_db }}"
@@ -7,6 +9,8 @@
     state: present
 - name: Create database for users service
   community.postgresql.postgresql_db:
+    login_host: "127.0.0.1"
+    port: 5432 
     login_user: "{{ db_username }}"
     login_password: "{{ db_password }}"  
     name: "{{ db_users_db }}"

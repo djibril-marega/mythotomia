@@ -49,6 +49,7 @@
     
 - name: Configure RDS instance postgresql 
   hosts: localhost
+  become: true 
   vars_files:
     - ../hosts_vars/database.yaml
     - ../hosts_vars/appservers.yaml 

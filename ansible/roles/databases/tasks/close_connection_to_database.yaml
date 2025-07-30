@@ -1,4 +1,5 @@
 - name: Ensure SSH tunnel is closed
-  shell: |
-    pkill -f "ssh -f -N -L 5432:{{ db_hostname }}:5432 {{ app_username }}@{{ app_hostname }}"
-  when: ssh_tunnel_check.stdout != "" 
+  shell: pkill -f "ssh -f -N -L 5432:{{ db_hostname }}:5432 {{ app_username }}@{{ app_hostname }}"
+  register: pkill_result
+  failed_when: pkill_result.rc not in [0, 143, 255]
+  ignore_errors: true 

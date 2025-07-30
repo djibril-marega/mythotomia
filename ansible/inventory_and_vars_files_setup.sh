@@ -1,43 +1,15 @@
 #!/bin/bash
 
 # Retrieve Terraform outputs 
-#outputsJSON=$(terraform output -json)
-#if [ -z "$outputsJSON" ]; then
-    #echo "JSON is empty"
-    #exit 1
-#fi
-outputsJSON='{
-  "instance_app_hostname": {
-    "sensitive": false,
-    "type": "string",
-    "value": "ec2-35-180-62-186.eu-west-3.compute.amazonaws.com"
-  },
-  "instance_backend_hostname": {
-    "sensitive": true,
-    "type": "string",
-    "value": "ip-10-0-1-196.eu-west-3.compute.internal"
-  },
-  "instance_db_hostname": {
-    "sensitive": true,
-    "type": "string",
-    "value": "terraform-20250727220650766300000001.c3uaca4yyib9.eu-west-3.rds.amazonaws.com"
-  },
-  "instance_db_password": {
-    "sensitive": true,
-    "type": "string",
-    "value": "xxyRfQie5EbLMj8xgxmQCJGm"
-  },
-  "instance_db_username": {
-    "sensitive": true,
-    "type": "string",
-    "value": "admin_db"
-  }
-}'
+outputsJSON=$(terraform output -json)
+if [ -z "$outputsJSON" ]; then
+    echo "JSON is empty"
+    exit 1
+fi
 
 
 # Extractation of outputs with jq 
 appHostname=$(echo "$outputsJSON" | jq -r '.instance_app_hostname.value')
-backendHostname=$(echo "$outputsJSON" | jq -r '.instance_backend_hostname.value')
 dbHostname=$(echo "$outputsJSON" | jq -r '.instance_db_hostname.value')  
 dbUsername=$(echo "$outputsJSON" | jq -r '.instance_db_username.value')
 dbPassword=$(echo "$outputsJSON" | jq -r '.instance_db_password.value')
@@ -102,10 +74,7 @@ mkdir -p inventory
 # Creation of the inventory.ini file 
 cat <<EOF > inventory/inventory.ini
 [appservers]
-$appHostname    ansible_user=ubuntu ansible_port=22
-
-[backends]
-$backendHostname    ansible_user=ubuntu   ansible_ssh_common_args='-o ProxyJump=ubuntu@$appHostname'
+$appHostname    ansible_user=ubuntu ansible_port=22 
 EOF
 
 echo "Inventory and secrets files created successfully."

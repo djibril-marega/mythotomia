@@ -1,12 +1,20 @@
 - name: Grant privileges to users service user on database
   community.postgresql.postgresql_privs:
     login_db: "{{ db_users_db }}"
+    login_host: "127.0.0.1"
+    login_user: "{{ db_username }}"
+    login_password: "{{ db_password }}"
+    port: 5432 
     type: database
     privs: CONNECT
     roles: "{{ db_users_username }}"
 - name: Grant privileges to users service user on schema public
   community.postgresql.postgresql_privs:
     login_db: "{{ db_users_db }}"
+    login_host: "127.0.0.1"
+    login_user: "{{ db_username }}"
+    login_password: "{{ db_password }}"
+    port: 5432 
     schema: public
     type: table
     objs: ALL_IN_SCHEMA
@@ -15,6 +23,10 @@
 - name: Grant privileges to users service user on sequences
   community.postgresql.postgresql_privs:  
     login_db: "{{ db_users_db }}"
+    login_host: "127.0.0.1"
+    login_user: "{{ db_username }}"
+    login_password: "{{ db_password }}"
+    port: 5432 
     schema: public
     type: sequence
     objs: ALL_IN_SCHEMA
@@ -23,6 +35,10 @@
 - name: Grant privileges to users service user on functions
   community.postgresql.postgresql_privs:
     login_db: "{{ db_users_db }}"
+    login_host: "127.0.0.1"
+    login_user: "{{ db_username }}"
+    login_password: "{{ db_password }}"
+    port: 5432 
     schema: public
     type: function
     objs: ALL_IN_SCHEMA
@@ -31,6 +47,10 @@
 - name: Grant USAGE privilege on schema public to users service user
   community.postgresql.postgresql_privs:
     login_db: "{{ db_users_db }}"
+    login_host: "127.0.0.1"
+    login_user: "{{ db_username }}"
+    login_password: "{{ db_password }}"
+    port: 5432 
     type: schema
     objs: public
     privs: USAGE
