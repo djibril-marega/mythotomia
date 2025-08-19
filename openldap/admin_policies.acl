@@ -1,0 +1,3 @@
+olcAccess: to dn.subtree="dc=mythotomia,dc=fr"
+  by dn.exact="cn=admin,dc=mythotomia,dc=fr" manage
+  by * none

@@ -1,0 +1,6 @@
+- import_tasks: initialization_vault.yaml
+- import_tasks: enable_secrets_engine.yaml
+- import_tasks: save_policies_in_vault.yaml
+- import_tasks: generate_approles.yaml
+- import_tasks: create_userpasses.yaml
+- import_tasks: generate_certificats.yaml

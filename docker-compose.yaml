@@ -11,8 +11,8 @@ services:
     expose:
       - "8000"
     networks:
-      - backend 
-      - vault_network
+      - backend_network 
+      - storage_network
   
   users:
     build:
@@ -27,8 +27,8 @@ services:
     expose:
       - "8000"
     networks:
-      - backend
-      - vault_network
+      - backend_network
+      - storage_network
     environment:
       - EXTERNAL_BASE_URL=http://localhost
 
@@ -44,14 +44,14 @@ services:
     expose:
       - "8000"
     networks:
-      - backend
-      - vault_network
+      - backend_network
+      - storage_network
     environment:
       - USERS_SERVICE_URL=http://users:8000
 
   nginx:
     build:
-      context: ./reverse_proxy_service
+      context: ./nginx
     container_name: nginx_reverse_proxy 
     volumes:
       - identity_static:/static/identity
@@ -67,32 +67,69 @@ services:
       - users
       - presentation
     networks:
-      - backend
+      - backend_network
+      - storage_network
   
   vault:
     build:
-      context: ./vault_service 
+      context: ./vault
     container_name: vault
     volumes:
-      - vault_data:/vault/file
-      - ./vault_service/config:/vault/config
+      - vault_data:/vault/data
+      - ./vault/config:/vault/config
     environment:
-      VAULT_ADDR: "http://0.0.0.0:8200"
-      VAULT_API_ADDR: "http://vault:8200"
+      VAULT_ADDR: "https://127.0.0.1:8200"
+      VAULT_API_ADDR: "https://vault:8200"
+      HTTP_PROXY: "http://tinyproxy:8888"
+      HTTPS_PROXY: "http://tinyproxy:8888"
+      NO_PROXY: "localhost,127.0.0.1,::1,vault"
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      VAULT_SKIP_VERIFY: "true" 
     networks:
-      - vault_network
+      - storage_network
     cap_add:
       - IPC_LOCK
+    depends_on:
+      - tinyproxy
+  
+  openldap:
+    build:
+      context: ./openldap 
+    container_name: openldap 
+    environment:
+      LDAP_ROOT: ${LDAP_ADMIN_TREE}
+      LDAP_ADMIN_USERNAME: ${LDAP_ROOT_USERNAME}
+      LDAP_ADMIN_PASSWORD: ${LDAP_ROOT_PASSWORD}
+      LDAP_USERS: ${LDAP_ADMIN_USERNAME}
+      LDAP_PASSWORDS: ${LDAP_ADMIN_PASSWORD}
+    networks:
+      - storage_network
+    volumes:
+      - openldap_data:/bitnami/openldap
+
+  tinyproxy:
+    build:
+      context: ./tinyproxy
+    container_name: tinyproxy
+    ports:
+      - "8888:8888"
+    networks:
+      - storage_network
+      - public_network
 
 
 networks:
-  backend:
+  backend_network:
     driver: bridge 
-  vault_network:
-    internal: true
+  storage_network:
+    internal: true 
+  public_network:
+    driver: bridge
 
 volumes:
   identity_static: 
   users_static:
   presentation_static:
   vault_data:
+  openldap_data:

@@ -1,0 +1,27 @@
+- name: Copy polcies files in Vault machine # [No idempotent] [Features to add] Check if directory content has changed before copying
+  ansible.builtin.copy:
+    src: /tmp/vault/policies/
+    dest: /tmp/vault/policies/
+    remote_src: yes # DISABLE IN REMOTE MACHINE USES
+  register: policies_files
+
+- name: Insert Vault policies files in Vault container # [No idempotent] [Features to add] Ignore if none files copied
+  ansible.builtin.command: >
+    docker cp /tmp/vault/policies/ vault:/vault/policies/
+  when: vault_connection is defined and (vault_connection.skipped | default(false) or vault_connection.rc | default(1) == 0)
+  register: policies_files_in_vault_hote
+  failed_when: policies_files_in_vault_hote.rc != 0
+  changed_when: policies_files_in_vault_hote.rc == 0
+
+- name: Load Vault policies in Vault # [No idempotent] [Features to add] Ignore if none files insert in Vault
+  ansible.builtin.command: >
+    docker exec vault vault policy write {{ item.name }} /vault/policies/{{ item.file }}
+  loop:
+    - { name: "identity_service", file: "identity_service.hcl" }
+    - { name: "users_service", file: "users_service.hcl" }
+    - { name: "presentation_service", file: "presentation_service.hcl" }
+    - { name: "admin", file: "admin.hcl" }
+  when: vault_connection is defined and (vault_connection.skipped | default(false) or vault_connection.rc | default(1) == 0)
+  register: policies_files_in_vault
+  failed_when: policies_files_in_vault.rc != 0
+  changed_when: policies_files_in_vault.rc == 0

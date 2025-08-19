@@ -1,0 +1,6 @@
+- name: Create a admin userpass
+  ansible.builtin.command: >
+    docker exec vault vault write auth/userpass/users/{{ userpass_username }} password={{ userpass_password }} policies=admin
+  when: vault_connection.skipped is defined or (vault_connection.rc | default(1)) == 0 
+  register: result_userpass_creation 
+  failed_when: "'Success! Data written to' not in result_userpass_creation.stdout"

@@ -4,4 +4,5 @@
 - import_tasks: create_databases.yaml
 - import_tasks: grant_privileges_for_users_service_user.yaml
 - import_tasks: grant_privileges_for_identity_service_user.yaml
+- import_tasks: grant_privileges_for_presentation_service_user.yaml 
 - import_tasks: close_connection_to_database.yaml 

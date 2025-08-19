@@ -1,0 +1,4 @@
+name                 role_id                                  secret_id                               
+users_service        4a8d48a5-e38b-f8bf-b034-f6f082c41b6c     3b25266f-cd97-2d17-b9f2-13f89663aa35    
+identity_service     af0a8c69-65aa-7037-590c-3405fc95ccc3     902cab82-f952-cc3c-bd2f-9146e7fc4cef    
+presentation_service 2bd6a91b-772b-16e4-35fb-cbd054b9c602     638dd7c9-5147-09b2-d9f8-5b7860ac0aee    

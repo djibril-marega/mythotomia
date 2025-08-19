@@ -1,0 +1,44 @@
+- name: Check if Vault is running
+  ansible.builtin.command: >
+    docker exec vault vault status -format=json
+  register: vault_status
+  ignore_errors: true
+  failed_when: false
+  no_log: true
+- name: Initialize Vault if it is not initialized
+  ansible.builtin.command: >
+    docker exec vault vault operator init -format=json
+  register: vault_init
+  when: vault_status.stdout | from_json | json_query('initialized') == false
+- name: Parse Vault initialization output
+  ansible.builtin.set_fact:
+    vault_init_json: "{{ vault_init.stdout | from_json }}"
+  when: vault_init is defined and vault_init.stdout is defined
+- name: Create tmp vault directory 
+  ansible.builtin.file:
+    path: /tmp/vault # Mount directory in S3 storage 
+    state: directory 
+    owner: root
+    group: root
+    mode: '600'
+- name: Store Vault recovery keys 
+  ansible.builtin.copy:
+    content: "{{ vault_init_json.recovery_keys_b64 | join('\n') }}"
+    dest: /tmp/vault/.vault_recovery_keys.txt
+    owner: root
+    group: root
+    mode: '0600'
+  when: vault_init is defined and vault_init.stdout is defined and vault_init_json.recovery_keys_b64 is defined 
+- name: Store Vault root token
+  ansible.builtin.copy:
+    content: "{{ vault_init_json.root_token }}"
+    dest: /tmp/vault/.vault_root_token.txt
+    owner: root
+    group: root
+    mode: '0600'
+  when: vault_init is defined and vault_init.stdout is defined and vault_init_json.root_token is defined 
+- name: Connection to Vault with root token
+  ansible.builtin.command: >
+    docker exec vault vault login -method=token token={{ vault_init_json.root_token }}
+  register: vault_connection
+  when: vault_init is defined and vault_init.stdout is defined and vault_init_json.root_token is defined

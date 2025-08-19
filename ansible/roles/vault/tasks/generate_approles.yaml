@@ -1,0 +1,53 @@
+- name: "Create roleapps" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write auth/approle/role/{{ item.policy }} \
+      token_policies="{{ item.policy }}" \
+      token_ttl=4h \
+      token_max_ttl=4d
+  loop:
+    - { policy: "identity_service"}
+    - { policy: "users_service"}
+    - { policy: "presentation_service"}
+
+- name: "Retrieve approle id" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault read -format=json auth/approle/role/{{ item.role }}/role-id
+  loop:
+    - { role: "identity_service"}
+    - { role: "users_service"}
+    - { role: "presentation_service"}
+  register: roles_ids
+
+- name: Show the role_id
+  ansible.builtin.debug:
+    msg: "{{ (item.stdout | from_json).data.role_id }}"
+  loop: "{{ roles_ids.results }}"
+
+- name: "Generate approles secrets ids" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write -format=json -f auth/approle/role/{{ item.role }}/secret-id
+  loop:
+    - { role: "identity_service"}
+    - { role: "users_service"}
+    - { role: "presentation_service"}
+  register: roles_secrets_ids
+
+- name: Show the role_secret_id
+  ansible.builtin.debug:
+    msg: "{{ (item.stdout | from_json).data.secret_id }}"
+  loop: "{{ roles_secrets_ids.results }}"
+
+- name: Write role_ids json to file
+  copy:
+    content: "{{ roles_ids | to_json }}"
+    dest: /tmp/vault/tmp.roles_ids.json
+
+- name: Write secret_ids json to file
+  copy:
+    content: "{{ roles_secrets_ids | to_json }}"
+    dest: /tmp/vault/tmp.secrets_ids.json
+
+- name:  Generate approles tokens
+  ansible.builtin.command: ./../generate_approles_tokens.sh "/tmp/vault/tmp.roles_ids.json" "/tmp/vault/tmp.secrets_ids.json" "/tmp/vault/roles.txt"
+  # USE ansible.builtin.script IN REMOTE MACHINE USAGE and ensure that jq is installed on remote machine
+

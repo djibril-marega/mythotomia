@@ -22,3 +22,15 @@
     ssl_mode: require
     encrypted: true
     state: present
+- name: Create user for presentation service
+  community.postgresql.postgresql_user:
+    login_host: "127.0.0.1"
+    port: 5432
+    login_db: "postgres"
+    login_user: "{{ db_username }}"
+    login_password: "{{ db_password }}"
+    name: "{{ db_presentation_username }}"
+    password: "{{ db_presentation_password }}"
+    ssl_mode: require
+    encrypted: true
+    state: present

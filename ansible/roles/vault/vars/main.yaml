@@ -1,0 +1,3 @@
+userpass_username: "admin"
+userpass_password: "admin_passsword"
+vault_server_ip: "127.0.0.1"

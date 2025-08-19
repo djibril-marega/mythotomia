@@ -1,0 +1,7 @@
+- name: Configure Vault Server
+  hosts: localhost # localhost for testing purposes but should be appservers in production
+  become: true
+  vars_files:
+    - ../roles/vars/main.yaml
+  roles:
+    - vault

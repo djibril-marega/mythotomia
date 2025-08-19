@@ -1,0 +1,89 @@
+- name: "Configure pki secrets engine to issue certificates with a maximum TTL" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault secrets tune -max-lease-ttl=87600h pki
+
+- name: "Root certificat configuration" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write -field=certificate pki/root/generate/internal \
+     common_name="example.com" \
+     issuer_name="root-2023" \
+     ttl=87600h
+  register: root_cert
+  failed_when: root_cert.rc != 0 and root_cert.stderr_lines is defined and ('issuer name already in use' not in root_cert.stderr)
+  changed_when: root_cert.rc == 0
+
+- name: Save root certificat
+  ansible.builtin.copy:
+    content: "{{ root_cert.stdout }}"
+    dest: root_2023_ca.crt
+
+- name: "Define role in PKI engine" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write pki/roles/2023-servers allow_any_name=true
+
+- name: "Configure PKI URLs for CA and CRL" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write pki/config/urls \
+    issuing_certificates="$VAULT_ADDR/v1/pki/ca"
+    crl_distribution_points="$VAULT_ADDR/v1/pki/crl"
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+
+
+- name: "Configure pki_int secrets engine to issue certificates with a maximum TTL" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault secrets tune -max-lease-ttl=43800h pki_int
+
+
+- name: "Generate an intermediate certificat" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write -format=json pki_int/intermediate/generate/internal \
+     common_name="example.com Intermediate Authority" \
+     issuer_name="example-dot-com-intermediate"
+  register: intermediate_certificat
+
+- name: "Save the CSR as pki_intermediate.csr"
+  ansible.builtin.copy:
+    content: "{{ (intermediate_certificat.stdout | from_json).data.csr }}"
+    dest: pki_intermediate.csr # then remove in follow task
+
+- name: Copy CSR into vault container
+  ansible.builtin.command: >
+    docker cp pki_intermediate.csr vault:/app/pki_intermediate.csr
+
+- name: "Sign the intermediate certificate with the root CA private key" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write -format=json pki/root/sign-intermediate \
+     issuer_ref="root-2023" \
+     csr=@pki_intermediate.csr \
+     format=pem_bundle ttl="43800h"
+  register: intermerdiaire_cert_signed
+
+- name: Save the generated certificate as intermediate.cert.pem locally
+  ansible.builtin.copy:
+    content: "{{ (intermerdiaire_cert_signed.stdout | from_json).data.certificate }}"
+    dest: intermediate.cert.pem # then remove in follow task
+
+- name: Copy ICertPem into vault container
+  ansible.builtin.command: >
+    docker cp intermediate.cert.pem vault:/app/intermediate.cert.pem
+
+- name: "Imported back intermediate.cert.pem into Vault" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write pki_int/intermediate/set-signed certificate=@intermediate.cert.pem
+
+- name: Get issuer_ref value
+  ansible.builtin.command: docker exec vault vault read -field=default pki_int/config/issuers
+  register: issuer_ref_value
+
+- name: "Create a role" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write pki_int/roles/example-dot-com \
+     issuer_ref="{{ issuer_ref_value.stdout }}" \
+     allowed_domains="example.com" \
+     allow_subdomains=true \
+     max_ttl="720h" 
+
+- name: "request a new certificate for the test.example.com domain based on the example-dot-com role" # [No idempotent]
+  ansible.builtin.command: >
+    docker exec vault vault write pki_int/issue/example-dot-com common_name="test.example.com" ttl="24h"

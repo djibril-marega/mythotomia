@@ -69,13 +69,14 @@ graph TD
     C --> Redis
     L --> Redis
     R --> Redis
+    I --> DB_Identity[(DB Identity)]
     U --> DB_Users[(DB Users)]
-    P --> DB_Pres[(DB Présentations)]
+    P --> DB_Pres[(DB Presentations)]
     S --> DB_Scores[(DB Scores)]
     C --> DB_Critiques[(DB Critiques)]
     L --> DB_Likes[(DB Likes)]
     R --> DB_Reco[(DB Recommendations)]
-    Sr --> DB_Search[(DB Recherche)]
+    Sr --> DB_Search[(DB Search)]
     R --> Redis
 ```
 

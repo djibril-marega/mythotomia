@@ -1,0 +1,12 @@
+# User admin_vault
+dn: uid=admin_vault,ou=vault,ou=services,dc=mythotomia,dc=fr
+objectClass: top
+objectClass: inetOrgPerson
+: posixAccount
+cn: admin vault
+sn: vault
+uid: admin_vault
+uidNumber: 1000
+gidNumber: 1000
+homeDirectory: /home/admin_vault
+userPassword: 

@@ -1,0 +1,9 @@
+dn: ou=services,dc=mythotomia,dc=fr
+objectClass: top
+objectClass: organizationalUnit
+ou: services
+
+dn: ou=vault,ou=services,dc=mythotomia,dc=fr
+objectClass: top
+objectClass: organizationalUnit
+ou: vault
